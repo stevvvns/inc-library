@@ -1,0 +1,23 @@
+{
+  "name": "@stevvvns/inc-library",
+  "version": "0.0.1",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npx esbuild --bundle --format=esm --keep-names --platform=browser --outdir=dist src/**/*.js",
+    "build:watch": "npm run build -- --watch",
+    "serve": "npx serve",
+    "pub": "npm run build && npm publish --access=public"
+  },
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@codemirror/lang-markdown": "^6.4.0",
+    "@stevvvns/incomponent": "^0.0.19",
+    "codemirror": "^6.0.2",
+    "dompurify": "^3.3.0",
+    "marked": "^16.4.1"
+  }
+}
