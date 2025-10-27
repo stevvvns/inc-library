@@ -1,9 +1,48 @@
 import { comp, html } from '@stevvvns/incomponent';
 
-comp(function LibButton() {
-  return { disabled: false };
-}, ['type', 'disabled']).template(
-  el => html`<button class=${el.type === 'primary' ? 'primary' : 'secondary'} ?disabled=${el.disabled}><span><slot></slot></span></button>`
+comp(
+  function LibIconButton() {
+    return { disabled: false };
+  },
+  ['disabled'],
+).template(
+  (el) => html`<button ?disabled=${el.disabled}><slot></slot></button>`,
+).style(`
+button {
+  border: 1px solid #555;
+  border-radius: 2px;
+  color: #555;
+  background: white;
+  padding: 2px 6px 0px 6px;
+}
+button:hover {
+  cursor: pointer;
+  filter: brightness(110%) drop-shadow(0 0 2px rgba(0, 0, 0, 0.2));
+}
+button:active {
+  filter: brightness(90%) !important;
+}
+@media (prefers-color-scheme: dark) {
+  button {
+    color: #aaa;
+    background: #222;
+  }
+}
+`);
+
+comp(
+  function LibButton() {
+    return { disabled: false };
+  },
+  ['type', 'disabled'],
+).template(
+  (el) =>
+    html`<button
+      class=${el.type === 'primary' ? 'primary' : 'secondary'}
+      ?disabled=${el.disabled}
+    >
+      <span><slot></slot></span>
+    </button>`,
 ).style(`
 :host {
   --primary-color: #666;

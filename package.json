@@ -1,23 +1,33 @@
 {
   "name": "@stevvvns/inc-library",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "npx esbuild --bundle --format=esm --keep-names --platform=browser --outdir=dist src/**/*.js",
-    "build:watch": "npm run build -- --watch",
-    "serve": "npx serve",
-    "pub": "npm run build && npm publish --access=public"
+    "build": "node esbuild.config.js",
+    "serve": "node esbuild.config.js -w",
+    "pub": "npm run build && npm publish --access=public",
+    "lint": "npx eslint src --fix; npx prettier src --single-quote --write"
   },
   "author": "",
   "license": "MIT",
   "description": "",
   "dependencies": {
     "@codemirror/lang-markdown": "^6.4.0",
-    "@stevvvns/incomponent": "^0.0.19",
+    "@stevvvns/incomponent": "^0.0.20",
     "codemirror": "^6.0.2",
     "dompurify": "^3.3.0",
-    "marked": "^16.4.1"
+    "marked": "^16.4.1",
+    "tippy.js": "^6.3.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "esbuild": "^0.25.11",
+    "esbuild-serve": "^1.0.1",
+    "eslint": "^9.38.0",
+    "glob": "^11.0.3",
+    "globals": "^16.4.0"
   }
 }

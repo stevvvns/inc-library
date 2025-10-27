@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="module" src="./dist/button.js"></script>
+  <script type="module" src="./dist/markdown-editor.js"></script>
+  <script type="module" src="./dist/markdown-renderer.js"></script>
+  <script type="module" src="./dist/tooltip.js"></script>
+  <style type="text/css">
+* {
+  --primary-color: #444;
+}
+h2 {
+  font-family: monospace;
+}
+h3 {
+  margin-bottom: 3px;
+  font-size: medium;
+}
+body {
+  color: #333;
+  background: #f3f3f3;
+  padding: 2em;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #222;
+    color: #f3f3f3;
+  }
+}
+  </style>
+  <script>
+function toB64(u8) {
+  const bytes = u8 instanceof ArrayBuffer ? new Uint8Array(u8) : u8;
+  return btoa(bytes.reduce((data, byte) => data + String.fromCharCode(byte), ''));
+}
+function toDataUrl(format, data) {
+  return `data:${format};base64,${toB64(data)}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.querySelector('input[type=color]');
+  const setColor = color => document.styleSheets[0].rules[0].style.setProperty('--primary-color', color);
+  inp.addEventListener('change', () => {
+    setColor(inp.value);
+    localStorage.setItem('color', inp.value);
+  });
+  const color = localStorage.getItem('color');
+  if (color) {
+    setColor(color);
+    inp.value = color;
+  }
+  const mdRenderer = document.querySelector('inc-lib-markdown-renderer');
+  const mdEditor = document.querySelector('inc-lib-markdown-editor');
+  mdEditor.addEventListener('change', evt => mdRenderer.markdown.value = evt.detail.value);
+
+  const images = {};
+  // upload the image to your service and resolve with its URL, or an arbitrary identifier if needed
+  mdEditor.addEventListener('upload', ({ detail: { hash, type, resolve, data } }) => {
+    images[hash] = { type, data };
+    resolve(hash);
+  });
+  // if the result of the above is not a real URL you can rewrite <img>s to resolve the image data
+  // from whatever you provided. (we could have just returned the data URL above and skipped this,
+  // but having long data URLs in markdown has detrimental performance consequences for the editor)
+  mdRenderer.addEventListener('rendered', ({ detail: { parsed, resolve } }) => {
+    resolve(
+      parsed.replace(
+        /<img (.*?)src="([^"]+)/g,
+        (_, pre, href) => {
+          console.log('load', href);
+          if (images[href]) {
+            return `<img ${pre} src="${toDataUrl(images[href].type, images[href].data)}`;
+          }
+          return `<img ${pre} src="${href}`;
+        }
+      )
+    );
+  });
+});
+  </script>
+</head>
+<body>
+  <h1>inc-library</h1>
+  <input type="color" value="#666666" />
+  <h2>&lt;inc-lib-tooltip> &amp; &lt;inc-lib-button></h2>
+  <h3>primary</h3>
+  <inc-lib-tooltip text="top" placement="top">
+    <inc-lib-button type="primary">Click</inc-lib-button>
+  </inc-lib-tooltip>
+  <inc-lib-tooltip text="right" placement="right">
+    <inc-lib-button type="primary" disabled="disabled">No click</inc-lib-button>
+  </inc-lib-tooltip>
+  <h3>secondary</h3>
+  <inc-lib-tooltip text="bottom" placement="bottom">
+    <inc-lib-button>Click</inc-lib-button>
+  </inc-lib-tooltip>
+  <inc-lib-tooltip text="auto" placement="auto">
+    <inc-lib-button disabled="disabled">No click</inc-lib-button>
+  </inc-lib-tooltip>
+  <h2>&lt;inc-lib-markdown-editor></h2>
+  <inc-lib-markdown-editor placeholder="Markdown goes here" initial-value="# writing markdown
+ * check out [the cheatsheet](https://www.markdownguide.org/cheat-sheet/)
+ * give it a shot
+ * you can paste or drop images
+* ![webcomponents logo](./webcomponents.svg)"></inc-lib-markdown-editor>
+  <h2>&lt;inc-lib-markdown-renderer></h2>
+  <div style="max-width: 80ch">
+    <inc-lib-markdown-renderer post-process="post-process" markdown="# writing markdown
+ * check out [the cheatsheet](https://www.markdownguide.org/cheat-sheet/)
+ * give it a shot
+ * you can paste or drop images
+* ![webcomponents logo](./webcomponents.svg)"></inc-lib-markdown-renderer>
+  </div>
+</body>
+</html>
+
+
