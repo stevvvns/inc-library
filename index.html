@@ -5,6 +5,8 @@
   <script type="module" src="./dist/markdown-editor.js"></script>
   <script type="module" src="./dist/markdown-renderer.js"></script>
   <script type="module" src="./dist/tooltip.js"></script>
+  <script type="module" src="./dist/modal.js"></script>
+  <script type="module" src="./dist/tabs.js"></script>
   <style type="text/css">
 * {
   --primary-color: #444;
@@ -28,7 +30,31 @@ body {
   }
 }
   </style>
-  <script>
+  <script type="module">
+
+import { comp, ref, html } from 'https://cdn.jsdelivr.net/npm/@stevvvns/incomponent@0.1.0/dist/main.min.js';
+
+comp(function ToggleModal() {
+  const isOpen = ref(false);
+  const action = ref();
+  function open() {
+    isOpen.value = true;
+  }
+  function close() {
+    isOpen.value = false;
+    action.value = 'canceled';
+  }
+  function submit() {
+    isOpen.value = false;
+    action.value = 'submitted';
+  }
+  return { isOpen, action, open, close, submit };
+})
+  .template(el => html`
+    ${el.isOpen ? html`<inc-lib-modal heading="Heading" cancel="Cancel" submit="Ok" @close=${el.close} @submit=${el.submit}><p>Modal body content</p></inc-lib-modal>` : html`${el.action ?? ''}`}
+    <inc-lib-button @click=${el.open}>Show</inc-lib-button>
+  `);
+
 function toB64(u8) {
   const bytes = u8 instanceof ArrayBuffer ? new Uint8Array(u8) : u8;
   return btoa(bytes.reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -97,6 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
   <inc-lib-tooltip text="auto" placement="auto">
     <inc-lib-button disabled="disabled">No click</inc-lib-button>
   </inc-lib-tooltip>
+  <h2>&lt;inc-lib-tabs></h2>
+  <inc-lib-tabs>
+    <inc-lib-tab label="Tab A">Tab A content</inc-lib-tab>
+    <inc-lib-tab label="Tab B">Tab B content</inc-lib-tab>
+  </inc-lib-tabs>
+  <h2>&lt;inc-lib-modal></h2>
+  <inc-toggle-modal></inc-toggle-modal>
   <h2>&lt;inc-lib-markdown-editor></h2>
   <inc-lib-markdown-editor placeholder="Markdown goes here" initial-value="# writing markdown
  * check out [the cheatsheet](https://www.markdownguide.org/cheat-sheet/)

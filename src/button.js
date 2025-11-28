@@ -44,9 +44,6 @@ comp(
       <span><slot></slot></span>
     </button>`,
 ).style(`
-:host {
-  --primary-color: #666;
-}
 button {
   border: 1px solid var(--primary-color);
   border-radius: 2px;
@@ -86,6 +83,9 @@ button[disabled]:hover {
 button.primary[disabled]:hover {
   background: #aaa;
   filter: none;
+}
+svg {
+  height: 14px;
 }
 @media (prefers-color-scheme: dark) {
   button {

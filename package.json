@@ -16,7 +16,7 @@
   "description": "",
   "dependencies": {
     "@codemirror/lang-markdown": "^6.4.0",
-    "@stevvvns/incomponent": "^0.0.20",
+    "@stevvvns/incomponent": "^0.1.0",
     "codemirror": "^6.0.2",
     "dompurify": "^3.3.0",
     "marked": "^16.4.1",

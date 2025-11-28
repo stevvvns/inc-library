@@ -29,7 +29,7 @@ function toDataUrl(format, data) {
 function assertImageRenders(format, data) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onerror = reject;
+    img.onerror = () => reject('invalid format');
     img.onload = resolve;
     img.src = toDataUrl(format, data);
   });
@@ -76,22 +76,23 @@ comp(
               const hash = await sha256(reader.result);
               const loc = await new Promise((resolve, reject) => {
                 el.emit('upload', {
-                  data: reader.result,
+                  data: new Uint8Array(reader.result),
                   type: file.type,
                   name: file.name,
                   hash,
                   resolve,
+                  reject
                 });
               });
               isTransferring.value = false;
               cm.dispatch(
                 cm.state.replaceSelection(
-                  `![Alt text](${loc} "Image title")\n`,
+                  `![Alt text](${loc} "${file.name.replace(/[""()]/g, '')}")\n`,
                 ),
               );
             } catch (ex) {
               console.error(ex);
-              pushError('Invalid format');
+              pushError(ex instanceof Error ? ex.message : ex.toString());
             }
           } else {
             pushError('Failed to read');
@@ -154,7 +155,7 @@ comp(
   })
   .template(
     (el) =>
-      html` <div id="prnt">
+      html`<div id="prnt">
           <label for="upload-image" style="{background: red}">
             <input id="upload-image" type="file" accept="image/*" multiple />
             <inc-lib-tooltip placement="right" text="Insert images">
@@ -218,12 +219,16 @@ label[for=upload-image] {
 .cm-scroller {
   padding-bottom: 16px;
 }
+.ͼ1 .cm-scroller {
+  font-family: serif;
+}
 .ͼb, .ͼ6 {
   color: var(--primary-color);
 }
 @media (prefers-color-scheme: dark) {
   .cm-editor {
     background: #2a2a2a;
+    color: #fafafa;
   }
   .ͼ2 .cm-content {
     caret-color: #777;

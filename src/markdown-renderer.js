@@ -1,4 +1,4 @@
-import { comp, html, ref, computed, unsafeHTML } from '@stevvvns/incomponent';
+import { comp, html, ref, derive, unsafeHTML } from '@stevvvns/incomponent';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
@@ -23,26 +23,27 @@ comp(
     const update = () => {
       setTimeout(async () => {
         let parsed = DOMPurify.sanitize(marked.parse(markdown.value));
-        if (el.postProcess) {
+        if (postProcess.value) {
           parsed = await new Promise((resolve) => {
             el.emit('rendered', { parsed, resolve });
           });
         }
-        rendered.value = DOMPurify.sanitize(parsed);
+        rendered.value = DOMPurify.sanitize(parsed, {
+          ALLOW_UNKNOWN_PROTOCOLS: true,
+        });
       }, 0);
     };
+    derive(update, [markdown, postProcess]);
     return { markdown, rendered, update, postProcess };
   },
   ['markdown', 'postProcess'],
 )
   .init((el) => {
     el.update();
-    computed(el.update, [el.markdown, el.postProcess]);
   })
   .template((el) => html`${unsafeHTML(el.rendered)}`).style(`
 :host {
   --primary-color: #666;
-  background: red;
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: sans-serif;
@@ -55,6 +56,9 @@ a {
 }
 img {
   max-width: 100%;
+}
+p:first-child {
+  margin-top: 0;
 }
 `);
 

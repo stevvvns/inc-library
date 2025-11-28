@@ -5,7 +5,7 @@ import tippyCss from 'tippy.js/dist/tippy.css';
 comp(
   function LibTooltip() {
     const text = ref('');
-    const placement = ref('top');
+    const placement = ref('auto');
     return { text, placement };
   },
   ['text', 'placement'],
