@@ -8,7 +8,7 @@
   <script type="module" src="./dist/modal.js"></script>
   <script type="module" src="./dist/tabs.js"></script>
   <style type="text/css">
-* {
+body {
   --primary-color: #444;
 }
 h2 {
@@ -65,7 +65,7 @@ function toDataUrl(format, data) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.querySelector('input[type=color]');
-  const setColor = color => document.styleSheets[0].rules[0].style.setProperty('--primary-color', color);
+  const setColor = color => document.body.style.setProperty("--primary-color", color);
   inp.addEventListener('change', () => {
     setColor(inp.value);
     localStorage.setItem('color', inp.value);
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
       parsed.replace(
         /<img (.*?)src="([^"]+)/g,
         (_, pre, href) => {
-          console.log('load', href);
           if (images[href]) {
             return `<img ${pre} src="${toDataUrl(images[href].type, images[href].data)}`;
           }
